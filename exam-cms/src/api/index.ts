@@ -4,11 +4,11 @@
  * @Author: sueRimn
  * @Date: 2019-09-02 21:26:02
  * @LastEditors: sueRimn
- * @LastEditTime: 2019-09-02 23:20:48
+ * @LastEditTime: 2019-09-03 20:11:24
  */
 import axios from 'axios';
-let requestObj = {
-    testUser(params) {
+const requestObj = {
+    testUser(params: object) {
         return axios.post('/user/login', params)
     }
 }

@@ -4,18 +4,14 @@
  * @Author: sueRimn
  * @Date: 2019-09-02 20:11:41
  * @LastEditors: sueRimn
- * @LastEditTime: 2019-09-03 19:12:23
+ * @LastEditTime: 2019-09-03 19:54:06
  */
-import { Button, Form, Icon, Input, message } from 'antd';
+import { Form, Icon, Input, Button, Checkbox, message } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import * as React from 'react';
 import config from '../../api';
 
 const { testUser } = config;
-
-function hasErrors(fieldsError: any) {
-    return Object.keys(fieldsError).some(field => fieldsError[field]);
-};
 
 const success = () => {
     message.success('login succeed!');
@@ -30,12 +26,15 @@ interface Propsinfo {
 interface State {
     code: Number
 }
+interface Names {
+    className: string
+}
 
 interface Propsinfo extends FormComponentProps {
     history: any
 }
 
-class Login extends React.Component<Propsinfo, State>{
+class Login extends React.Component<Propsinfo, State,Names>{
     constructor(props: any) {
         super(props);
         this.state = {
@@ -62,25 +61,24 @@ class Login extends React.Component<Propsinfo, State>{
                         if (this.state.code === 1) {
                             //登陆成功code
                             success();
-                               this.props.history.push('/userhome');
+                            this.props.history.push('/userhome');
                         } else {
                             //登陆失败
                             warning();
+                            values.username = '';
+                            values.password = '';
                         }
                     })
                 })
             }
         });
     };
-    
+
     public render() {
-        const { getFieldDecorator, getFieldsError, getFieldError, isFieldTouched } = this.props.form;
-        // Only show error after a field is touched.
-        const usernameError = isFieldTouched('username') && getFieldError('username');
-        const passwordError = isFieldTouched('password') && getFieldError('password');
+        const { getFieldDecorator } = this.props.form;
         return (
-            <Form layout="inline" onSubmit={this.handleSubmit}>
-                <Form.Item validateStatus={usernameError ? 'error' : ''} help={usernameError || ''}>
+            <Form onSubmit={this.handleSubmit} className="login-form">
+                <Form.Item className='formitem'>
                     {getFieldDecorator('username', {
                         rules: [{ required: true, message: 'Please input your username!' }],
                     })(
@@ -90,7 +88,7 @@ class Login extends React.Component<Propsinfo, State>{
                         />,
                     )}
                 </Form.Item>
-                <Form.Item validateStatus={passwordError ? 'error' : ''} help={passwordError || ''}>
+                <Form.Item className='formitem'>
                     {getFieldDecorator('password', {
                         rules: [{ required: true, message: 'Please input your Password!' }],
                     })(
@@ -101,10 +99,18 @@ class Login extends React.Component<Propsinfo, State>{
                         />,
                     )}
                 </Form.Item>
-                <Form.Item>
-                    <Button type="primary" htmlType="submit" disabled={hasErrors(getFieldsError())}>
+                <Form.Item className='formitem'>
+                    {getFieldDecorator('remember', {
+                        valuePropName: 'checked',
+                        initialValue: true,
+                    })(<Checkbox>Remember me</Checkbox>)}
+                    <a className="login-form-forgot" href="">
+                        Forgot password
+              </a>
+                    <Button type="primary" htmlType="submit" className="login-form-button">
                         Log in
               </Button>
+                    Or <a href="">register now!</a>
                 </Form.Item>
             </Form>
         );
