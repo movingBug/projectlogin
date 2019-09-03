@@ -1,11 +1,15 @@
 import * as React from 'react';
 import './App.css';
 import Routers from './router/index';
+import { Provider } from 'mobx-react';
+import store from './store';
 
 class App extends React.Component {
   public render() {
     return (
-      <Routers/>
+      <Provider {...store}>
+        <Routers />
+      </Provider>
     );
   }
 }

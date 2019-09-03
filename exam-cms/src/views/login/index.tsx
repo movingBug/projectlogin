@@ -4,14 +4,12 @@
  * @Author: sueRimn
  * @Date: 2019-09-02 20:11:41
  * @LastEditors: sueRimn
- * @LastEditTime: 2019-09-03 19:54:06
+ * @LastEditTime: 2019-09-03 21:21:17
  */
 import { Form, Icon, Input, Button, Checkbox, message } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import * as React from 'react';
-import config from '../../api';
-
-const { testUser } = config;
+import { inject, observer } from 'mobx-react';
 
 const success = () => {
     message.success('login succeed!');
@@ -20,26 +18,22 @@ const success = () => {
 const warning = () => {
     message.warning('login be defeated');
 };
+
 interface Propsinfo {
-    form: any
-}
-interface State {
-    code: Number
-}
-interface Names {
-    className: string
+    form: any,
+    user: any
 }
 
 interface Propsinfo extends FormComponentProps {
     history: any
 }
 
-class Login extends React.Component<Propsinfo, State,Names>{
+@inject('user')
+@observer
+
+class Login extends React.Component<Propsinfo>{
     constructor(props: any) {
         super(props);
-        this.state = {
-            code: 0
-        }
     }
 
     public componentDidMount() {
@@ -48,28 +42,38 @@ class Login extends React.Component<Propsinfo, State,Names>{
 
     public handleSubmit = (e: { preventDefault: () => void }) => {
         e.preventDefault();
-        this.props.form.validateFields((err: Error, values: any) => {
+        this.props.form.validateFields(async (err: Error, values: any) => {
             if (!err) {
                 const params = {
                     user_name: values.username,
                     user_pwd: values.password
                 }
-                testUser(params).then(res => {
-                    this.setState({
-                        code: res.data.code
-                    }, () => {
-                        if (this.state.code === 1) {
-                            //登陆成功code
-                            success();
-                            this.props.history.push('/userhome');
-                        } else {
-                            //登陆失败
-                            warning();
-                            values.username = '';
-                            values.password = '';
-                        }
-                    })
-                })
+                const result = await this.props.user.login(params);
+                console.log('......result', result);
+                if (result === 1) {
+                    success()
+                    this.props.history.push('/userhome');
+                } else {
+                    warning()
+                    values.username = '';
+                    values.password = '';
+                }
+                // testUser(params).then(res => {
+                //     this.setState({
+                //         code: res.data.code
+                //     }, () => {
+                //         if (this.state.code === 1) {
+                //             //登陆成功code
+                //             success();
+                //             this.props.history.push('/userhome');
+                //         } else {
+                //             //登陆失败
+                //             warning();
+                //             values.username = '';
+                //             values.password = '';
+                //         }
+                //     })
+                // })
             }
         });
     };
