@@ -4,13 +4,16 @@
  * @Author: sueRimn
  * @Date: 2019-09-02 20:11:41
  * @LastEditors: sueRimn
- * @LastEditTime: 2019-09-03 10:20:36
+ * @LastEditTime: 2019-09-03 19:12:23
  */
-import React, { Component } from 'react';
+import { Button, Form, Icon, Input, message } from 'antd';
+import { FormComponentProps } from 'antd/lib/form';
+import * as React from 'react';
 import config from '../../api';
-import { Form, Icon, Input, Button, message } from 'antd';
-let { testUser } = config;
-function hasErrors(fieldsError) {
+
+const { testUser } = config;
+
+function hasErrors(fieldsError: any) {
     return Object.keys(fieldsError).some(field => fieldsError[field]);
 };
 
@@ -18,50 +21,59 @@ const success = () => {
     message.success('login succeed!');
 };
 
-const error = () => {
-    message.error('This is an error message');
-};
-
 const warning = () => {
     message.warning('login be defeated');
 };
+interface Propsinfo {
+    form: any
+}
+interface State {
+    code: Number
+}
 
-export class Login extends Component {
-    state = {
-        code: 0
+interface Propsinfo extends FormComponentProps {
+    history: any
+}
+
+class Login extends React.Component<Propsinfo, State>{
+    constructor(props: any) {
+        super(props);
+        this.state = {
+            code: 0
+        }
     }
-    componentDidMount() {
+
+    public componentDidMount() {
         this.props.form.validateFields();
     }
-    handleSubmit = e => {
+
+    public handleSubmit = (e: { preventDefault: () => void }) => {
         e.preventDefault();
-        this.props.form.validateFields((err, values) => {
+        this.props.form.validateFields((err: Error, values: any) => {
             if (!err) {
-                let params = {
+                const params = {
                     user_name: values.username,
                     user_pwd: values.password
                 }
                 testUser(params).then(res => {
-                    if (res.data.code === 1) {
-                        this.setState({
-                            code: res.data.code
-                        }, () => {
-                            let { code } = this.state;
-                            if (code === 1) {
-                                //登陆成功
-                                success();
-                                this.props.history.push('/userhome');
-                            } else {
-                                //登陆失败
-                                warning();
-                            }
-                        })
-                    }
+                    this.setState({
+                        code: res.data.code
+                    }, () => {
+                        if (this.state.code === 1) {
+                            //登陆成功code
+                            success();
+                               this.props.history.push('/userhome');
+                        } else {
+                            //登陆失败
+                            warning();
+                        }
+                    })
                 })
             }
         });
     };
-    render() {
+    
+    public render() {
         const { getFieldDecorator, getFieldsError, getFieldError, isFieldTouched } = this.props.form;
         // Only show error after a field is touched.
         const usernameError = isFieldTouched('username') && getFieldError('username');
@@ -99,4 +111,4 @@ export class Login extends Component {
     }
 }
 
-export default Form.create({ name: 'horizontal_login' })(Login);
+export default Form.create()(Login);

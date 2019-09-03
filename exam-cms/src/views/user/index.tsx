@@ -4,12 +4,12 @@
  * @Author: sueRimn
  * @Date: 2019-09-03 08:57:54
  * @LastEditors: sueRimn
- * @LastEditTime: 2019-09-03 08:58:12
+ * @LastEditTime: 2019-09-03 19:13:41
  */
-import React, { Component } from 'react';
+import * as React from 'react';
 
-class Userhome extends Component {
-    render() {
+class Userhome extends React.Component {
+   public render() {
         return (
             <div>
                 this is a user page;
